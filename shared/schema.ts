@@ -1,5 +1,6 @@
+export * from "./models/chat";
 import { pgTable, text, serial, integer, boolean, timestamp, uuid, decimal, jsonb, time, date } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -138,6 +139,15 @@ export const aiMappingRules = pgTable("ai_mapping_rules", {
   reasonTemplate: text("reason_template"),
   priority: integer("priority").default(0),
 });
+
+// --- Chat Models (copied from chat.ts to fix import loop/export issue if needed, but better to just export * from model) ---
+// Actually, the issue is that shared/schema.ts didn't export conversations/messages which were defined in shared/models/chat.ts
+// but server/replit_integrations/chat/storage.ts was importing from @shared/schema expecting them there.
+
+// We already added `export * from "./models/chat";` at the top of this file.
+// But we need to make sure the file exists and has the exports.
+// The file shared/models/chat.ts was created.
+// So re-exporting it here should fix the issue.
 
 // --- Relations ---
 export const bundlesRelations = relations(bundles, ({ many }) => ({
