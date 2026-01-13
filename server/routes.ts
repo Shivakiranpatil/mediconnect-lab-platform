@@ -45,7 +45,7 @@ export async function registerRoutes(
   });
 
   app.get(api.auth.me.path, async (req, res) => {
-    if (!req.session.userId) return res.json(null);
+    if (!req.session || !req.session.userId) return res.json(null);
     const user = await storage.getUser(req.session.userId);
     res.json(user || null);
   });

@@ -2,8 +2,29 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
+const PostgresSessionStore = connectPg(session);
 const app = express();
+
+app.use(
+  session({
+    store: new PostgresSessionStore({
+      pool,
+      tableName: "session",
+    }),
+    secret: process.env.SESSION_SECRET || "default_secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    },
+  })
+);
+
 const httpServer = createServer(app);
 
 declare module "http" {
