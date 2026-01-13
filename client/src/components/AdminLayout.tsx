@@ -25,14 +25,17 @@ interface AdminLayoutProps {
   subtitle?: string;
 }
 
+import { Brain, Cog } from "lucide-react";
+
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
   { icon: Calendar, label: 'Bookings', href: '/admin/bookings' },
   { icon: Package, label: 'Catalog', href: '/admin/catalog' },
   { icon: Building2, label: 'Labs', href: '/admin/labs' },
   { icon: Users, label: 'Users', href: '/admin/users' },
-  { icon: Settings, label: 'AI Rules', href: '/admin/ai-rules' },
+  { icon: Brain, label: 'AI Rules', href: '/admin/ai-rules' },
   { icon: FileText, label: 'Reports', href: '/admin/reports' },
+  { icon: Cog, label: 'Settings', href: '/admin/settings' },
 ];
 
 export default function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
@@ -73,14 +76,17 @@ export default function AdminLayout({ children, title, subtitle }: AdminLayoutPr
                           asChild
                           isActive={isActive}
                           data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
-                          className={isActive 
-                            ? 'bg-blue-600 text-white hover:bg-blue-600 hover:text-white' 
-                            : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
-                          }
                         >
-                          <Link href={item.href}>
-                            <item.icon className="w-5 h-5" />
-                            <span>{item.label}</span>
+                          <Link 
+                            href={item.href}
+                            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                              isActive 
+                                ? 'bg-blue-600 text-white font-medium' 
+                                : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
+                            }`}
+                          >
+                            <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : ''}`} />
+                            <span className={isActive ? 'text-white font-medium' : ''}>{item.label}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>

@@ -16,6 +16,7 @@ import AdminLabsPage from "@/pages/AdminLabsPage";
 import AdminUsersPage from "@/pages/AdminUsersPage";
 import AdminAIRulesPage from "@/pages/AdminAIRulesPage";
 import AdminReportsPage from "@/pages/AdminReportsPage";
+import AdminSettingsPage from "@/pages/AdminSettingsPage";
 import AIDiscoveryPage from "@/pages/AIDiscoveryPage";
 import AIResultsPage from "@/pages/AIResultsPage";
 import BundleDetailsPage from "@/pages/BundleDetailsPage";
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/admin/users" component={AdminUsersPage} />
       <Route path="/admin/ai-rules" component={AdminAIRulesPage} />
       <Route path="/admin/reports" component={AdminReportsPage} />
+      <Route path="/admin/settings" component={AdminSettingsPage} />
       <Route path="/lab" component={LabLoginPage} />
       <Route path="/lab/dashboard" component={LabDashboardPage} />
       <Route path="/ai-discovery" component={AIDiscoveryPage} />
