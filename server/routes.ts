@@ -330,5 +330,39 @@ export async function registerRoutes(
     res.json(allMappingRules);
   });
 
+  // --- Lab Portal API Routes ---
+  
+  // Lab auth middleware helper
+  const requireLabAdmin = async (req: any, res: any): Promise<boolean> => {
+    if (!req.session?.userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return false;
+    }
+    const user = await storage.getUser(req.session.userId);
+    if (!user || user.role !== 'lab_admin') {
+      res.status(403).json({ message: 'Lab admin access required' });
+      return false;
+    }
+    return true;
+  };
+
+  // Lab Bookings
+  app.get('/api/lab/bookings', async (req, res) => {
+    if (!await requireLabAdmin(req, res)) return;
+    const allAppointments = await db.select().from(appointments);
+    res.json(allAppointments);
+  });
+
+  app.patch('/api/lab/bookings/:id/status', async (req, res) => {
+    if (!await requireLabAdmin(req, res)) return;
+    const { id } = req.params;
+    const { status } = req.body;
+    if (!status || !['pending', 'confirmed', 'collected', 'completed', 'cancelled'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+    await db.update(appointments).set({ status }).where(eq(appointments.id, id));
+    res.json({ success: true });
+  });
+
   return httpServer;
 }

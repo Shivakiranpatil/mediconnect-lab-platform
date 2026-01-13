@@ -10,6 +10,12 @@ import AdminLoginPage from "@/pages/AdminLoginPage";
 import LabLoginPage from "@/pages/LabLoginPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import LabDashboardPage from "@/pages/LabDashboardPage";
+import LabBookingsPage from "@/pages/LabBookingsPage";
+import LabZonesPage from "@/pages/LabZonesPage";
+import LabPricingPage from "@/pages/LabPricingPage";
+import LabHoursPage from "@/pages/LabHoursPage";
+import LabReportsPage from "@/pages/LabReportsPage";
+import LabSettingsPage from "@/pages/LabSettingsPage";
 import AdminBookingsPage from "@/pages/AdminBookingsPage";
 import AdminCatalogPage from "@/pages/AdminCatalogPage";
 import AdminLabsPage from "@/pages/AdminLabsPage";
@@ -38,6 +44,12 @@ function Router() {
       <Route path="/admin/settings" component={AdminSettingsPage} />
       <Route path="/lab" component={LabLoginPage} />
       <Route path="/lab/dashboard" component={LabDashboardPage} />
+      <Route path="/lab/bookings" component={LabBookingsPage} />
+      <Route path="/lab/zones" component={LabZonesPage} />
+      <Route path="/lab/pricing" component={LabPricingPage} />
+      <Route path="/lab/hours" component={LabHoursPage} />
+      <Route path="/lab/reports" component={LabReportsPage} />
+      <Route path="/lab/settings" component={LabSettingsPage} />
       <Route path="/ai-discovery" component={AIDiscoveryPage} />
       <Route path="/ai-results" component={AIResultsPage} />
       <Route path="/tests" component={HomePage} />
