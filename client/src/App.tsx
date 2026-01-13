@@ -10,6 +10,12 @@ import AdminLoginPage from "@/pages/AdminLoginPage";
 import LabLoginPage from "@/pages/LabLoginPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import LabDashboardPage from "@/pages/LabDashboardPage";
+import AdminBookingsPage from "@/pages/AdminBookingsPage";
+import AdminCatalogPage from "@/pages/AdminCatalogPage";
+import AdminLabsPage from "@/pages/AdminLabsPage";
+import AdminUsersPage from "@/pages/AdminUsersPage";
+import AdminAIRulesPage from "@/pages/AdminAIRulesPage";
+import AdminReportsPage from "@/pages/AdminReportsPage";
 import AIDiscoveryPage from "@/pages/AIDiscoveryPage";
 import AIResultsPage from "@/pages/AIResultsPage";
 import BundleDetailsPage from "@/pages/BundleDetailsPage";
@@ -22,6 +28,12 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/admin" component={AdminLoginPage} />
       <Route path="/admin/dashboard" component={AdminDashboardPage} />
+      <Route path="/admin/bookings" component={AdminBookingsPage} />
+      <Route path="/admin/catalog" component={AdminCatalogPage} />
+      <Route path="/admin/labs" component={AdminLabsPage} />
+      <Route path="/admin/users" component={AdminUsersPage} />
+      <Route path="/admin/ai-rules" component={AdminAIRulesPage} />
+      <Route path="/admin/reports" component={AdminReportsPage} />
       <Route path="/lab" component={LabLoginPage} />
       <Route path="/lab/dashboard" component={LabDashboardPage} />
       <Route path="/ai-discovery" component={AIDiscoveryPage} />

@@ -1,12 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { api, errorSchemas } from "@shared/routes";
+import { api } from "@shared/routes";
 import { z } from "zod";
 import { registerChatRoutes } from "./replit_integrations/chat";
 import { registerImageRoutes } from "./replit_integrations/image";
 import { db } from "./db";
-import { users, bundles } from "@shared/schema";
+import { users, bundles, tests, partnerLabs, appointments, aiRuleSets, aiQuestions, aiMappingRules } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 export async function registerRoutes(
@@ -176,6 +176,158 @@ export async function registerRoutes(
     } catch (err) {
       res.json({ message: "Seeding encountered an error but may have partially succeeded", error: String(err) });
     }
+  });
+
+  // --- Admin API Routes ---
+  
+  // Admin auth middleware helper
+  const requireAdmin = async (req: any, res: any): Promise<boolean> => {
+    if (!req.session?.userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return false;
+    }
+    const user = await storage.getUser(req.session.userId);
+    if (!user || user.role !== 'admin') {
+      res.status(403).json({ message: 'Admin access required' });
+      return false;
+    }
+    return true;
+  };
+  
+  // Bookings
+  app.get('/api/admin/bookings', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const allAppointments = await db.select().from(appointments);
+    res.json(allAppointments);
+  });
+
+  app.patch('/api/admin/bookings/:id/status', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { id } = req.params;
+    const { status } = req.body;
+    if (!status || !['pending', 'confirmed', 'collected', 'completed', 'cancelled'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+    await db.update(appointments).set({ status }).where(eq(appointments.id, id));
+    res.json({ success: true });
+  });
+
+  // Tests
+  app.get('/api/admin/tests', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const allTests = await db.select().from(tests);
+    res.json(allTests);
+  });
+
+  app.post('/api/admin/tests', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { name, description, category, preparation, turnaroundHours, isActive } = req.body;
+    if (!name) return res.status(400).json({ message: 'Name is required' });
+    const [newTest] = await db.insert(tests).values({ name, description, category, preparation, turnaroundHours, isActive }).returning();
+    res.status(201).json(newTest);
+  });
+
+  app.patch('/api/admin/tests/:id', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { id } = req.params;
+    const { name, description, category, preparation, turnaroundHours, isActive } = req.body;
+    const [updated] = await db.update(tests).set({ name, description, category, preparation, turnaroundHours, isActive }).where(eq(tests.id, id)).returning();
+    res.json(updated);
+  });
+
+  // Bundles (admin)
+  app.post('/api/admin/bundles', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { name, description, basePrice, category, isActive, isPopular } = req.body;
+    if (!name || !basePrice) return res.status(400).json({ message: 'Name and base price are required' });
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    const [newBundle] = await db.insert(bundles).values({ name, description, basePrice, category, isActive, isPopular, slug }).returning();
+    res.status(201).json(newBundle);
+  });
+
+  app.patch('/api/admin/bundles/:id', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { id } = req.params;
+    const { name, description, basePrice, category, isActive, isPopular } = req.body;
+    const [updated] = await db.update(bundles).set({ name, description, basePrice, category, isActive, isPopular }).where(eq(bundles.id, id)).returning();
+    res.json(updated);
+  });
+
+  // Labs
+  app.get('/api/admin/labs', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const allLabs = await db.select().from(partnerLabs);
+    res.json(allLabs);
+  });
+
+  app.post('/api/admin/labs', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { name, description, emirate, status, avgConfirmationHours } = req.body;
+    if (!name) return res.status(400).json({ message: 'Name is required' });
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    const [newLab] = await db.insert(partnerLabs).values({ name, description, emirate, status, avgConfirmationHours, slug }).returning();
+    res.status(201).json(newLab);
+  });
+
+  app.patch('/api/admin/labs/:id', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { id } = req.params;
+    const { name, description, emirate, status, avgConfirmationHours } = req.body;
+    const [updated] = await db.update(partnerLabs).set({ name, description, emirate, status, avgConfirmationHours }).where(eq(partnerLabs.id, id)).returning();
+    res.json(updated);
+  });
+
+  // Users
+  app.get('/api/admin/users', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const allUsers = await db.select().from(users);
+    res.json(allUsers.map(u => ({ ...u, password: '***' })));
+  });
+
+  app.post('/api/admin/users', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { name, username, password, role } = req.body;
+    if (!username || !password) return res.status(400).json({ message: 'Username and password are required' });
+    const [newUser] = await db.insert(users).values({ name, username, password, role }).returning();
+    res.status(201).json({ ...newUser, password: '***' });
+  });
+
+  app.patch('/api/admin/users/:id', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { id } = req.params;
+    const { name, role } = req.body;
+    const [updated] = await db.update(users).set({ name, role }).where(eq(users.id, id)).returning();
+    res.json({ ...updated, password: '***' });
+  });
+
+  // AI Rule Sets
+  app.get('/api/admin/ai-rule-sets', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const allRuleSets = await db.select().from(aiRuleSets);
+    res.json(allRuleSets);
+  });
+
+  app.post('/api/admin/ai-rule-sets', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { name, maxBundles, disclaimerText, isActive } = req.body;
+    if (!name) return res.status(400).json({ message: 'Name is required' });
+    const [newRuleSet] = await db.insert(aiRuleSets).values({ name, maxBundles, disclaimerText, isActive }).returning();
+    res.status(201).json(newRuleSet);
+  });
+
+  app.patch('/api/admin/ai-rule-sets/:id', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const { id } = req.params;
+    const { name, maxBundles, disclaimerText, isActive } = req.body;
+    const [updated] = await db.update(aiRuleSets).set({ name, maxBundles, disclaimerText, isActive }).where(eq(aiRuleSets.id, id)).returning();
+    res.json(updated);
+  });
+
+  // AI Mapping Rules
+  app.get('/api/admin/ai-mapping-rules', async (req, res) => {
+    if (!await requireAdmin(req, res)) return;
+    const allMappingRules = await db.select().from(aiMappingRules);
+    res.json(allMappingRules);
   });
 
   return httpServer;
