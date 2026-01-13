@@ -1,12 +1,112 @@
 import { Link } from "wouter";
-import { Sparkles, Search, Calendar, FileText, ChevronRight, ArrowRight } from "lucide-react";
+import { Sparkles, Search, Calendar, ChevronRight, ArrowRight, Send, User } from "lucide-react";
 import { useBundles } from "@/hooks/use-bundles";
 import { Navbar } from "@/components/Navbar";
 import { BundleCard } from "@/components/BundleCard";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function HomePage() {
   const { data: bundles, isLoading } = useBundles();
+  const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
+  const [input, setInput] = useState("");
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<number | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const startConversation = async () => {
+    try {
+      const res = await fetch("/api/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "Home Chat" })
+      });
+      const data = await res.json();
+      setConversationId(data.id);
+      return data.id;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  };
+
+  const handleSend = async (text: string) => {
+    if (!text.trim() || isChatLoading) return;
+    
+    let currentId = conversationId;
+    if (!currentId) {
+      currentId = await startConversation();
+    }
+    if (!currentId) return;
+
+    const userMsg = { role: 'user' as const, content: text };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setIsChatLoading(true);
+
+    try {
+      const response = await fetch(`/api/conversations/${currentId}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: text })
+      });
+
+      if (!response.body) throw new Error("No response body");
+      
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let assistantMsg = { role: 'assistant' as const, content: "" };
+      setMessages(prev => [...prev, assistantMsg]);
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+        
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.content) {
+                assistantMsg.content += data.content;
+                setMessages(prev => {
+                  const newMsgs = [...prev];
+                  newMsgs[newMsgs.length - 1] = { ...assistantMsg };
+                  return newMsgs;
+                });
+              }
+            } catch (e) {
+              // Ignore partial JSON
+            }
+          }
+        }
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
+  const suggestedQuestions = [
+    "What tests do I need for fatigue?",
+    "How does home collection work?",
+    "Tell me about the full body checkup"
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
@@ -55,18 +155,15 @@ export default function HomePage() {
             </div>
           </motion.div>
         </div>
-
-        {/* Floating Stats or Decorative Elements could go here */}
       </section>
 
       {/* Quick Actions */}
       <section className="relative z-20 -mt-16 container mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {[
             { icon: Sparkles, label: 'AI Discovery', desc: 'Personalized plan', color: 'from-violet-500 to-purple-500', href: '/ai-discovery' },
             { icon: Search, label: 'Browse Tests', desc: 'Explore all packages', color: 'from-blue-500 to-cyan-500', href: '/tests' },
             { icon: Calendar, label: 'Book Now', desc: 'Schedule collection', color: 'from-teal-500 to-emerald-500', href: '/book' },
-            { icon: FileText, label: 'My Reports', desc: 'View results', color: 'from-orange-500 to-amber-500', href: '/dashboard' },
           ].map((item, i) => (
             <Link key={i} href={item.href}>
               <motion.div 
@@ -115,8 +212,128 @@ export default function HomePage() {
         )}
       </section>
 
+      {/* Health AI Assistant Chat */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Health AI Assistant</h2>
+            <p className="text-lg text-slate-500">
+              Get instant answers to your health questions and personalized test recommendations.
+            </p>
+          </div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white rounded-[2.5rem] shadow-2xl shadow-blue-200/50 border border-slate-100 overflow-hidden flex flex-col h-[600px]"
+          >
+            {/* Chat Header */}
+            <div className="p-6 bg-gradient-to-r from-blue-600 to-teal-500 text-white flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl backdrop-blur-md flex items-center justify-center shadow-lg">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">AI Health Assistant</h3>
+                <p className="text-xs text-blue-50">Online • Always here to help</p>
+              </div>
+            </div>
+
+            {/* Messages Area */}
+            <div 
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50"
+            >
+              {messages.length === 0 && (
+                <div className="h-full flex flex-col items-center justify-center text-center px-8">
+                  <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
+                    <Sparkles className="w-10 h-10 text-blue-500" />
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-800 mb-2">How can I help you today?</h4>
+                  <p className="text-slate-500 mb-8 max-w-sm">
+                    Ask me about symptoms, tests, or how our home collection service works.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    {suggestedQuestions.map((q, i) => (
+                      <button 
+                        key={i}
+                        onClick={() => handleSend(q)}
+                        className="px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              <AnimatePresence>
+                {messages.map((msg, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`max-w-[80%] p-4 rounded-3xl ${
+                      msg.role === 'user' 
+                        ? 'bg-blue-600 text-white rounded-tr-none' 
+                        : 'bg-white text-slate-700 shadow-md border border-slate-100 rounded-tl-none'
+                    }`}>
+                      <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              {isChatLoading && (
+                <motion.div 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }}
+                  className="flex justify-start"
+                >
+                  <div className="bg-white p-4 rounded-3xl rounded-tl-none shadow-md border border-slate-100 flex gap-1">
+                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" />
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Chat Input */}
+            <div className="p-6 bg-white border-t border-slate-100">
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSend(input);
+                }}
+                className="relative flex items-center gap-3"
+              >
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask a health question..."
+                  className="flex-1 h-14 pl-6 pr-16 bg-slate-50 border-none rounded-2xl text-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+                <button 
+                  type="submit"
+                  disabled={!input.trim() || isChatLoading}
+                  className="absolute right-2 w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </form>
+              <p className="mt-4 text-[10px] text-center text-slate-400 uppercase tracking-widest font-bold">
+                🔒 Private & Secure • AI-Powered Health Guidance
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Trust Section */}
-      <section className="py-20 bg-white border-t border-slate-100">
+      <section className="py-20 bg-slate-50 border-t border-slate-100">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-slate-900 mb-12">Trusted by leading healthcare providers</h2>
           <div className="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
