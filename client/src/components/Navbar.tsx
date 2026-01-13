@@ -36,13 +36,19 @@ export function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
+          {[
+            { href: "/", label: "Home" },
+            { href: "/how-it-works", label: "How it Works" },
+            { href: "/labs", label: "Lab Partners" },
+            { href: "/faqs", label: "FAQs" },
+            { href: "/contact", label: "Contact Us" },
+          ].map((link) => (
             <Link key={link.href} href={link.href}>
               <div
-                className={`text-sm font-medium transition-colors cursor-pointer ${
+                className={`text-sm font-bold transition-colors cursor-pointer ${
                   location === link.href
                     ? "text-blue-600"
-                    : "text-slate-500 hover:text-slate-900"
+                    : "text-slate-600 hover:text-blue-600"
                 }`}
               >
                 {link.label}
@@ -52,7 +58,7 @@ export function Navbar() {
         </div>
 
         {/* Actions */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-3">
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -70,11 +76,18 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link href="/auth">
-              <Button className="bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg transition-all rounded-xl px-6">
-                Sign In
-              </Button>
-            </Link>
+            <>
+              <Link href="/auth">
+                <Button variant="ghost" className="text-slate-900 font-bold hover:bg-slate-50 rounded-xl px-6 h-11">
+                  Login
+                </Button>
+              </Link>
+              <Link href="/auth">
+                <Button className="bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transition-all rounded-xl px-6 h-11 font-bold">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
           )}
         </div>
 
