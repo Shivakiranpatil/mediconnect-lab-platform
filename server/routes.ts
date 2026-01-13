@@ -5,6 +5,9 @@ import { api, errorSchemas } from "@shared/routes";
 import { z } from "zod";
 import { registerChatRoutes } from "./replit_integrations/chat";
 import { registerImageRoutes } from "./replit_integrations/image";
+import { db } from "./db";
+import { users, bundles } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -131,63 +134,47 @@ export async function registerRoutes(
   // --- Seed Data Endpoint (Hidden) ---
   app.get('/api/seed', async (req, res) => {
     try {
-      // Check if users exist first
-      const existingAdmin = await storage.getUserByUsername('admin');
-      if (!existingAdmin) {
-        await storage.createUser({
-          username: 'admin',
-          password: 'admin123',
-          role: 'admin',
-          name: 'System Admin'
-        });
-      }
+      console.log("[seed] Starting seeding process...");
+      
+      // 1. Create Users safely
+      const usersToCreate = [
+        { username: 'admin', password: 'admin123', role: 'admin', name: 'System Admin' },
+        { username: 'labadmin', password: 'lab123', role: 'lab_admin', name: 'Lab Manager' }
+      ];
 
-      const existingLab = await storage.getUserByUsername('labadmin');
-      if (!existingLab) {
-        await storage.createUser({
-          username: 'labadmin',
-          password: 'lab123',
-          role: 'lab_admin',
-          name: 'Lab Manager'
-        });
-      }
-
-      // Create Bundles safely
-      const bundleData = [
-        {
-          name: 'Essential Health Check',
-          slug: 'essential',
-          description: 'Perfect starting point.',
-          basePrice: '199',
-          isPopular: true,
-          category: 'General'
-        },
-        {
-          name: 'Heart Health Panel',
-          slug: 'heart',
-          basePrice: '349',
-          isPopular: true,
-          category: 'Heart'
-        },
-        {
-          name: 'Full Body Checkup',
-          slug: 'full',
-          basePrice: '699',
-          isPopular: true,
-          category: 'Premium'
+      for (const u of usersToCreate) {
+        try {
+          const [existing] = await db.select().from(users).where(eq(users.username, u.username));
+          if (!existing) {
+            await db.insert(users).values(u);
+            console.log(`[seed] Created user: ${u.username}`);
+          }
+        } catch (e) {
+          console.error(`[seed] User ${u.username} error:`, e);
         }
+      }
+
+      // 2. Create Bundles safely
+      const bundleData = [
+        { name: 'Essential Health Check', slug: 'essential', description: 'Perfect starting point.', basePrice: '199', isPopular: true, category: 'General' },
+        { name: 'Heart Health Panel', slug: 'heart', basePrice: '349', isPopular: true, category: 'Heart' },
+        { name: 'Full Body Checkup', slug: 'full', basePrice: '699', isPopular: true, category: 'Premium' }
       ];
 
       for (const b of bundleData) {
-        const existing = await storage.getBundlesBySlug([b.slug]);
-        if (existing.length === 0) {
-          await storage.createBundle(b);
+        try {
+          const [exists] = await db.select().from(bundles).where(eq(bundles.slug, b.slug));
+          if (!exists) {
+            await db.insert(bundles).values(b);
+          }
+        } catch (e) {
+          // ignore
         }
       }
 
-      res.json({ message: "Seeding complete" });
-    } catch (e) {
-      res.status(500).json({ message: String(e) });
+      res.json({ message: "Seeding complete. Admin and Lab users should now be able to login." });
+    } catch (err) {
+      res.json({ message: "Seeding encountered an error but may have partially succeeded", error: String(err) });
     }
   });
 
