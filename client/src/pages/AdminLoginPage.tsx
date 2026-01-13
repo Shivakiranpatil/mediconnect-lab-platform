@@ -46,7 +46,7 @@ export default function AdminLoginPage() {
         return;
       }
       queryClient.setQueryData(["/api/auth/me"], user);
-      setLocation("/");
+      setLocation("/admin/dashboard");
       toast({
         title: "Welcome, Admin",
         description: "Successfully logged into the administration portal.",

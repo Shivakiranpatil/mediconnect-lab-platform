@@ -46,7 +46,7 @@ export default function LabLoginPage() {
         return;
       }
       queryClient.setQueryData(["/api/auth/me"], user);
-      setLocation("/");
+      setLocation("/lab/dashboard");
       toast({
         title: "Welcome, Lab Partner",
         description: "Successfully logged into the lab management portal.",

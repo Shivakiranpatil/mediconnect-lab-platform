@@ -8,6 +8,8 @@ import HomePage from "@/pages/HomePage";
 import AuthPage from "@/pages/AuthPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import LabLoginPage from "@/pages/LabLoginPage";
+import AdminDashboardPage from "@/pages/AdminDashboardPage";
+import LabDashboardPage from "@/pages/LabDashboardPage";
 import AIDiscoveryPage from "@/pages/AIDiscoveryPage";
 import AIResultsPage from "@/pages/AIResultsPage";
 import BundleDetailsPage from "@/pages/BundleDetailsPage";
@@ -19,10 +21,12 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/admin" component={AdminLoginPage} />
+      <Route path="/admin/dashboard" component={AdminDashboardPage} />
       <Route path="/lab" component={LabLoginPage} />
+      <Route path="/lab/dashboard" component={LabDashboardPage} />
       <Route path="/ai-discovery" component={AIDiscoveryPage} />
       <Route path="/ai-results" component={AIResultsPage} />
-      <Route path="/tests" component={HomePage} /> {/* Reuse Home for now */}
+      <Route path="/tests" component={HomePage} />
       <Route path="/bundles/:id" component={BundleDetailsPage} />
       <Route path="/labs" component={LabsPage} />
       <Route component={NotFound} />
