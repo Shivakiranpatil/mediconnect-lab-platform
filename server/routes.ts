@@ -131,51 +131,59 @@ export async function registerRoutes(
   // --- Seed Data Endpoint (Hidden) ---
   app.get('/api/seed', async (req, res) => {
     try {
-      // Create Bundles
-      const b1 = await storage.createBundle({
-        name: 'Essential Health Check',
-        slug: 'essential',
-        description: 'Perfect starting point.',
-        basePrice: '199',
-        isPopular: true,
-        category: 'General'
-      });
-      const b2 = await storage.createBundle({
-        name: 'Heart Health Panel',
-        slug: 'heart',
-        basePrice: '349',
-        isPopular: true,
-        category: 'Heart'
-      });
-      const b3 = await storage.createBundle({
-        name: 'Full Body Checkup',
-        slug: 'full',
-        basePrice: '699',
-        isPopular: true,
-        category: 'Premium'
-      });
+      // Check if users exist first
+      const existingAdmin = await storage.getUserByUsername('admin');
+      if (!existingAdmin) {
+        await storage.createUser({
+          username: 'admin',
+          password: 'admin123',
+          role: 'admin',
+          name: 'System Admin'
+        });
+      }
 
-      // Create Rule Set
-      const rs = await storage.createAiRuleSet({
-        name: 'Default Discovery Rules',
-        isActive: true
-      });
+      const existingLab = await storage.getUserByUsername('labadmin');
+      if (!existingLab) {
+        await storage.createUser({
+          username: 'labadmin',
+          password: 'lab123',
+          role: 'lab_admin',
+          name: 'Lab Manager'
+        });
+      }
 
-      // Create Questions
-      await storage.createAiQuestion({
-        ruleSetId: rs.id,
-        questionKey: 'intent',
-        questionText: 'What brings you here today?',
-        options: ["Routine health check", "Monitor existing condition", "Feeling tired"],
-        sortOrder: 1
-      });
-      await storage.createAiQuestion({
-        ruleSetId: rs.id,
-        questionKey: 'age',
-        questionText: 'What is your age group?',
-        options: ["Under 25", "25-34", "35-50", "50+"],
-        sortOrder: 2
-      });
+      // Create Bundles safely
+      const bundleData = [
+        {
+          name: 'Essential Health Check',
+          slug: 'essential',
+          description: 'Perfect starting point.',
+          basePrice: '199',
+          isPopular: true,
+          category: 'General'
+        },
+        {
+          name: 'Heart Health Panel',
+          slug: 'heart',
+          basePrice: '349',
+          isPopular: true,
+          category: 'Heart'
+        },
+        {
+          name: 'Full Body Checkup',
+          slug: 'full',
+          basePrice: '699',
+          isPopular: true,
+          category: 'Premium'
+        }
+      ];
+
+      for (const b of bundleData) {
+        const existing = await storage.getBundlesBySlug([b.slug]);
+        if (existing.length === 0) {
+          await storage.createBundle(b);
+        }
+      }
 
       res.json({ message: "Seeding complete" });
     } catch (e) {
