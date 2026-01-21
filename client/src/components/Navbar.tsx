@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useUser } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Sparkles, User, Menu } from "lucide-react";
+import { Home as HomeIcon, Menu, X, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,50 +15,42 @@ export function Navbar() {
   const { data: user } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navLinks = [
-    { href: "/tests", label: "Browse Tests" },
-    { href: "/how-it-works", label: "How it Works" },
-    { href: "/labs", label: "Partner Labs" },
-  ];
+  const navItems = ['Home', 'How It Works', 'Lab Partners', 'FAQs', 'Contact Us'];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-100">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group cursor-pointer">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-teal-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
-            <Sparkles className="w-5 h-5" />
+    <header className="px-4 sm:px-6 py-4" data-testid="navbar">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        {/* Logo/Brand */}
+        <Link href="/">
+          <div className="flex items-center gap-2 text-blue-600 font-bold text-lg cursor-pointer" data-testid="logo">
+            <HomeIcon className="w-5 h-5" />
+            <span className="hidden sm:inline">MediConnect</span>
           </div>
-          <span className="font-display font-bold text-xl text-slate-900 tracking-tight">
-            Medi<span className="text-blue-600">Connect</span>
-          </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
-          {[
-            { href: "/", label: "Home" },
-            { href: "/how-it-works", label: "How it Works" },
-            { href: "/labs", label: "Lab Partners" },
-            { href: "/faqs", label: "FAQs" },
-            { href: "/contact", label: "Contact Us" },
-          ].map((link) => (
-            <Link key={link.href} href={link.href}>
-              <div
-                className={`text-sm font-bold transition-colors cursor-pointer ${
-                  location === link.href
-                    ? "text-blue-600"
-                    : "text-slate-600 hover:text-blue-600"
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-8">
+          {navItems.map((item, index) => (
+            <Link 
+              key={item} 
+              href={index === 0 ? "/" : index === 1 ? "/how-it-works" : index === 2 ? "/labs" : "#"}
+            >
+              <button
+                className={`text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                  (index === 0 && location === "/") 
+                    ? 'text-blue-600 bg-blue-50 px-4 py-2 rounded-lg'
+                    : 'text-gray-700 hover:text-blue-600'
                 }`}
+                data-testid={`nav-${item.toLowerCase().replace(/\s/g, '-')}`}
               >
-                {link.label}
-              </div>
+                {item}
+              </button>
             </Link>
           ))}
-        </div>
+        </nav>
 
-        {/* Actions */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Auth buttons - Desktop */}
+        <div className="hidden sm:flex items-center gap-3">
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -78,50 +70,65 @@ export function Navbar() {
           ) : (
             <>
               <Link href="/auth">
-                <Button variant="ghost" className="text-slate-900 font-bold hover:bg-slate-50 rounded-xl px-6 h-11">
+                <button className="px-4 sm:px-5 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors" data-testid="button-login">
                   Login
-                </Button>
+                </button>
               </Link>
               <Link href="/auth">
-                <Button className="bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transition-all rounded-xl px-6 h-11 font-bold">
+                <button className="px-4 sm:px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg" data-testid="button-signup">
                   Sign Up
-                </Button>
+                </button>
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile Menu Toggle */}
+        {/* Mobile menu button */}
         <button
-          className="md:hidden p-2 text-slate-600"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="lg:hidden p-2 text-gray-700 hover:text-blue-600 transition-colors"
+          data-testid="button-mobile-menu"
         >
-          <Menu className="w-6 h-6" />
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-100 bg-white p-4 space-y-4 shadow-xl">
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href}>
-              <div 
-                className="block py-3 px-4 rounded-lg hover:bg-slate-50 text-slate-700 font-medium cursor-pointer"
-                onClick={() => setMobileMenuOpen(false)}
+        <div className="lg:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
+          <nav className="flex flex-col gap-3">
+            {navItems.map((item, index) => (
+              <Link 
+                key={item} 
+                href={index === 0 ? "/" : index === 1 ? "/how-it-works" : index === 2 ? "/labs" : "#"}
               >
-                {link.label}
-              </div>
-            </Link>
-          ))}
-          <div className="pt-4 border-t border-slate-100">
-             <Link href="/auth">
-               <Button className="w-full justify-center bg-blue-600 text-white rounded-xl py-6">
-                 Sign In / Register
-               </Button>
-             </Link>
-          </div>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-left w-full px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    (index === 0 && location === "/")
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {item}
+                </button>
+              </Link>
+            ))}
+            <div className="flex flex-col gap-2 mt-2 px-4">
+              <Link href="/auth">
+                <button className="py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors text-left">
+                  Login
+                </button>
+              </Link>
+              <Link href="/auth">
+                <button className="py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300 text-center w-full">
+                  Sign Up
+                </button>
+              </Link>
+            </div>
+          </nav>
         </div>
       )}
-    </nav>
+    </header>
   );
 }
