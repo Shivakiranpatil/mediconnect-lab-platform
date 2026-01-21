@@ -59,3 +59,20 @@ export function useRegister() {
     },
   });
 }
+
+export function useLogout() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Logout failed");
+    },
+    onSuccess: () => {
+      queryClient.setQueryData([api.auth.me.path], null);
+      queryClient.invalidateQueries({ queryKey: [api.auth.me.path] });
+    },
+  });
+}
