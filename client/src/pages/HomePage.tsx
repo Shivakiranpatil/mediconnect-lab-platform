@@ -511,48 +511,53 @@ export default function HomePage() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-gradient-to-b from-gray-900 via-gray-900 to-black text-gray-300 relative overflow-hidden mt-8 sm:mt-20" data-testid="footer">
+        <footer className="bg-gradient-to-b from-gray-900 via-gray-900 to-black text-gray-300 relative overflow-hidden mt-20" data-testid="footer">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl" />
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl" />
           </div>
 
           <div className="relative z-10">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
-              <div className="grid grid-cols-2 lg:grid-cols-6 gap-6 sm:gap-8 mb-8 sm:mb-12">
+            <div className="max-w-7xl mx-auto px-6 py-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8 mb-12">
                 {/* Brand Section */}
-                <div className="col-span-2 lg:col-span-2">
-                  <div className="flex items-center gap-2 mb-3 sm:mb-4 group cursor-pointer">
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg shadow-blue-500/20">
-                      <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+                <div className="lg:col-span-2">
+                  <div className="flex items-center gap-3 mb-6 group cursor-pointer">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg shadow-blue-500/20">
+                      <Sparkles className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-lg sm:text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
-                      MediConnect
+                    <span className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                      LabConnect
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6 leading-relaxed max-w-xs">
+                  <p className="text-sm text-gray-400 mb-6 leading-relaxed max-w-xs">
                     AI-powered lab test discovery and booking platform for Dubai, UAE. Get personalized health test recommendations in minutes.
                   </p>
 
                   {/* Contact Info */}
-                  <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
-                    <a href="tel:+97141234567" className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-400 hover:text-blue-400 transition-colors group">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800/50 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300">
-                        <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <div className="space-y-3 mb-6">
+                    <a href="tel:+97141234567" className="flex items-center gap-3 text-sm text-gray-400 hover:text-blue-400 transition-colors group">
+                      <div className="w-10 h-10 bg-gray-800/50 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300">
+                        <Phone className="w-4 h-4" />
                       </div>
                       <span>+971 4 123 4567</span>
                     </a>
-                    <a href="mailto:support@mediconnect.ae" className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-400 hover:text-blue-400 transition-colors group">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800/50 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300">
-                        <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <a href="mailto:support@labconnect.ae" className="flex items-center gap-3 text-sm text-gray-400 hover:text-blue-400 transition-colors group">
+                      <div className="w-10 h-10 bg-gray-800/50 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300">
+                        <Mail className="w-4 h-4" />
                       </div>
-                      <span className="hidden sm:inline">support@mediconnect.ae</span>
-                      <span className="sm:hidden">Email Support</span>
+                      <span>support@labconnect.ae</span>
+                    </a>
+                    <a href="https://wa.me/971412345678" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-400 hover:text-green-400 transition-colors group">
+                      <div className="w-10 h-10 bg-gray-800/50 rounded-lg flex items-center justify-center group-hover:bg-green-600 transition-all duration-300">
+                        <MessageCircle className="w-4 h-4" />
+                      </div>
+                      <span>WhatsApp Support</span>
                     </a>
                   </div>
 
                   {/* Social Media Icons */}
-                  <div className="flex gap-2 sm:gap-3">
+                  <div className="flex gap-3">
                     {socialLinks.map((social) => {
                       const Icon = social.icon;
                       return (
@@ -560,9 +565,9 @@ export default function HomePage() {
                           key={social.name}
                           href="#"
                           aria-label={social.name}
-                          className={`w-9 h-9 sm:w-11 sm:h-11 bg-gray-800/50 backdrop-blur rounded-lg sm:rounded-xl flex items-center justify-center ${social.color} hover:scale-110 hover:-translate-y-1 transition-all duration-300 group border border-gray-700 hover:border-transparent shadow-lg`}
+                          className={`w-11 h-11 bg-gray-800/50 backdrop-blur rounded-xl flex items-center justify-center ${social.color} hover:scale-110 hover:-translate-y-1 transition-all duration-300 group border border-gray-700 hover:border-transparent shadow-lg`}
                         >
-                          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-white transition-colors" />
+                          <Icon className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
                         </a>
                       );
                     })}
@@ -571,11 +576,11 @@ export default function HomePage() {
 
                 {/* Company Links */}
                 <div>
-                  <h3 className="text-white font-semibold mb-2.5 sm:mb-4 text-xs sm:text-base">Company</h3>
-                  <ul className="space-y-1.5 sm:space-y-2.5">
+                  <h3 className="text-white font-semibold mb-4 text-base">Company</h3>
+                  <ul className="space-y-3">
                     {['About Us', 'How It Works', 'Careers', 'Blog', 'Press'].map((link) => (
                       <li key={link}>
-                        <a href="#" className="text-xs sm:text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">
+                        <a href="#" className="text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">
                           {link}
                         </a>
                       </li>
@@ -585,11 +590,11 @@ export default function HomePage() {
 
                 {/* Tests Links */}
                 <div>
-                  <h3 className="text-white font-semibold mb-2.5 sm:mb-4 text-xs sm:text-base">Tests & Bundles</h3>
-                  <ul className="space-y-1.5 sm:space-y-2.5">
+                  <h3 className="text-white font-semibold mb-4 text-base">Tests & Bundles</h3>
+                  <ul className="space-y-3">
                     {['Browse All Tests', 'Test Bundles', "Women's Health", "Men's Health", 'Blood Sugar Guide'].map((link) => (
                       <li key={link}>
-                        <a href="#" className="text-xs sm:text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">
+                        <a href="#" className="text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">
                           {link}
                         </a>
                       </li>
@@ -599,22 +604,22 @@ export default function HomePage() {
 
                 {/* Partners Links */}
                 <div>
-                  <h3 className="text-white font-semibold mb-2.5 sm:mb-4 text-xs sm:text-base">For Partners</h3>
-                  <ul className="space-y-1.5 sm:space-y-2.5">
-                    <li><Link href="/lab" className="text-xs sm:text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">Lab Partner Portal</Link></li>
-                    <li><a href="#" className="text-xs sm:text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">Become a Partner</a></li>
-                    <li><a href="#" className="text-xs sm:text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">Partner Benefits</a></li>
-                    <li><Link href="/admin" className="text-xs sm:text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">Admin Portal</Link></li>
+                  <h3 className="text-white font-semibold mb-4 text-base">For Partners</h3>
+                  <ul className="space-y-3">
+                    <li><Link href="/lab/login" className="text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">Lab Partner Portal</Link></li>
+                    <li><a href="#" className="text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">Become a Partner</a></li>
+                    <li><a href="#" className="text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">Partner Benefits</a></li>
+                    <li><Link href="/admin/login" className="text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">Admin Portal</Link></li>
                   </ul>
                 </div>
 
                 {/* Support Links */}
                 <div>
-                  <h3 className="text-white font-semibold mb-2.5 sm:mb-4 text-xs sm:text-base">Support</h3>
-                  <ul className="space-y-1.5 sm:space-y-2.5">
+                  <h3 className="text-white font-semibold mb-4 text-base">Support</h3>
+                  <ul className="space-y-3">
                     {['Help Center', 'FAQs', 'Contact Support', 'Privacy Policy', 'Terms of Service'].map((link) => (
                       <li key={link}>
-                        <a href="#" className="text-xs sm:text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">
+                        <a href="#" className="text-sm text-gray-400 hover:text-blue-400 transition-colors inline-block hover:translate-x-1 duration-300">
                           {link}
                         </a>
                       </li>
@@ -624,21 +629,21 @@ export default function HomePage() {
               </div>
 
               {/* Bottom Bar */}
-              <div className="pt-6 sm:pt-8 border-t border-gray-800">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                  <p className="text-xs sm:text-sm text-gray-400">
-                    © 2026 MediConnect. All rights reserved.
+              <div className="pt-8 border-t border-gray-800">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                  <p className="text-sm text-gray-400">
+                    © 2026 LabConnect. All rights reserved.
                   </p>
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" />
-                    <span className="text-xs sm:text-sm text-gray-400">Dubai Healthcare City, UAE</span>
+                    <MapPin className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm text-gray-400">Dubai Healthcare City, UAE</span>
                   </div>
                 </div>
 
                 {/* Disclaimer */}
-                <div className="mt-4 sm:mt-6 p-3 sm:p-5 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-xl sm:rounded-2xl border border-blue-800/30 backdrop-blur">
+                <div className="mt-6 p-5 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-2xl border border-blue-800/30 backdrop-blur">
                   <p className="text-xs text-gray-400 text-center leading-relaxed">
-                    <span className="text-amber-400 font-semibold">⚠️ Important Notice:</span> This platform is for educational purposes only and does not provide medical advice, diagnosis, or treatment. 
+                    <span className="text-amber-400 font-semibold">Important Notice:</span> This platform is for educational purposes only and does not provide medical advice, diagnosis, or treatment. 
                     All test recommendations are non-clinical suggestions. Please consult with a licensed healthcare professional or contact your chosen lab directly to confirm test appropriateness for your specific health needs.
                   </p>
                 </div>
