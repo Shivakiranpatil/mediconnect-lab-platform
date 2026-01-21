@@ -26,6 +26,7 @@ export function Navbar() {
 
   const isActive = (href: string) => {
     if (href === '/') return location === '/';
+    if (href.startsWith('#')) return false;
     return location.startsWith(href);
   };
 
@@ -38,25 +39,21 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo/Brand */}
         <Link href="/">
-          <div className="flex items-center gap-2 text-blue-600 font-bold text-lg cursor-pointer group" data-testid="logo">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <HomeIcon className="w-4 h-4 text-white" />
-            </div>
-            <span className="hidden sm:inline bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">
-              MediConnect
-            </span>
+          <div className="flex items-center gap-2 text-blue-600 font-bold text-lg cursor-pointer" data-testid="logo">
+            <HomeIcon className="w-5 h-5" />
+            <span className="hidden sm:inline">LabTest</span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-8">
           {navItems.map((item) => (
             <Link key={item.name} href={item.href}>
               <button
-                className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
+                className={`text-sm font-medium transition-all duration-300 ${
                   isActive(item.href)
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/50'
+                    ? 'text-blue-600'
+                    : 'text-gray-700 hover:text-blue-600'
                 }`}
                 data-testid={`nav-${item.name.toLowerCase().replace(/\s/g, '-')}`}
               >
@@ -72,7 +69,7 @@ export function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors" data-testid="user-menu-trigger">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
                     {(user.name || user.username || 'U').charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-medium text-gray-700">{user.name || user.username}</span>
@@ -109,7 +106,7 @@ export function Navbar() {
             <>
               <Link href="/auth">
                 <button 
-                  className="px-5 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" 
+                  className="px-4 sm:px-5 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors" 
                   data-testid="button-login"
                 >
                   Login
@@ -117,7 +114,7 @@ export function Navbar() {
               </Link>
               <Link href="/auth">
                 <button 
-                  className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105" 
+                  className="px-4 sm:px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg" 
                   data-testid="button-signup"
                 >
                   Sign Up
@@ -130,7 +127,7 @@ export function Navbar() {
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+          className="lg:hidden p-2 text-gray-700 hover:text-blue-600 transition-colors"
           data-testid="button-mobile-menu"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -139,16 +136,16 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden mt-4 pb-4 border-t border-gray-100 pt-4 animate-in slide-in-from-top-2 duration-200">
-          <nav className="flex flex-col gap-1">
+        <div className="lg:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
+          <nav className="flex flex-col gap-3">
             {navItems.map((item) => (
               <Link key={item.name} href={item.href}>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`text-left w-full px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                  className={`text-left w-full px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive(item.href)
                       ? 'text-blue-600 bg-blue-50'
-                      : 'text-gray-600 hover:bg-gray-50'
+                      : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   {item.name}
@@ -160,7 +157,7 @@ export function Navbar() {
           {user ? (
             <div className="mt-4 pt-4 border-t border-gray-100 px-4">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
                   {(user.name || user.username || 'U').charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -181,7 +178,7 @@ export function Navbar() {
               <Link href="/auth">
                 <button 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-2.5 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors text-center"
+                  className="w-full py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors text-left"
                 >
                   Login
                 </button>
@@ -189,7 +186,7 @@ export function Navbar() {
               <Link href="/auth">
                 <button 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 text-center"
+                  className="w-full py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300 text-center"
                 >
                   Sign Up
                 </button>
