@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { 
   LayoutDashboard, Users, Calendar, FileText, Settings, 
-  Package, Building2, LogOut, Activity
+  Package, Building2, LogOut, Activity, Tag
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -31,6 +31,7 @@ const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
   { icon: Calendar, label: 'Bookings', href: '/admin/bookings' },
   { icon: Package, label: 'Catalog', href: '/admin/catalog' },
+  { icon: Tag, label: 'Categories', href: '/admin/categories' },
   { icon: Building2, label: 'Labs', href: '/admin/labs' },
   { icon: Users, label: 'Users', href: '/admin/users' },
   { icon: Brain, label: 'AI Rules', href: '/admin/ai-rules' },

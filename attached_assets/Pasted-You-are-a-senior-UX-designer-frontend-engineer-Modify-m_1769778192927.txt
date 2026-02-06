@@ -1,0 +1,155 @@
+You are a senior UX designer + frontend engineer.
+
+Modify my EXISTING homepage (do not rebuild from scratch) to make it a clear LAB AGGREGATOR website and to add three new homepage sections:
+1) “How It Works” (reduce anxiety early),
+2) “Why Book Through Us” (value props),
+3) “Test Finder (AI)” (symptom-to-test suggestions).
+
+Goal:
+Increase clarity, trust, and conversions for patients, normal users, and elderly users on desktop.
+
+GLOBAL RULES:
+- This is a LAB AGGREGATOR: users compare labs, prices, and book tests or home collection.
+- Avoid AI diagnosis. The AI feature is only for “test suggestions to consider”.
+- Keep language simple, reassuring, and non-technical.
+- Preserve the existing layout/components where possible; modify content, hierarchy, and add sections.
+
+------------------------------------------------------------
+A) Update HERO (Aggregator Positioning)
+------------------------------------------------------------
+Replace existing hero copy with:
+
+Headline:
+“Book Blood Tests from Trusted Labs Near You”
+
+Subheadline:
+“Compare prices, choose certified diagnostic labs, and book home sample collection in minutes.”
+
+Hero controls:
+- City selector dropdown (required)
+- Test search bar with placeholder: “Search tests (CBC, Thyroid, Sugar, Vitamin D…)”
+- Add “Popular tests” quick chips under search.
+
+Primary CTA:
+“Search Tests”
+
+Secondary CTA:
+“Browse Packages” or “View Popular Tests”
+
+Add a small trust microcopy line under CTAs:
+“Certified labs • Transparent pricing • Support available”
+
+------------------------------------------------------------
+B) Add Section: HOW IT WORKS (Reduce Anxiety Early)
+------------------------------------------------------------
+Add this section directly below the hero (or after any existing banner):
+
+Title:
+“How Booking a Test Works”
+
+4 steps (simple, reassuring):
+1) “Choose your test”
+   “Search by test name or browse by category.”
+2) “Compare labs & prices”
+   “See trusted labs near you with clear pricing.”
+3) “Book home collection or visit lab”
+   “Pick a slot that works for you.”
+4) “Get tested”
+   “The lab confirms your appointment and completes the test.”
+
+Add a small reassurance line below:
+“We connect you to certified partner labs. Testing is done by the lab.”
+
+------------------------------------------------------------
+C) Add Section: WHY BOOK THROUGH US
+------------------------------------------------------------
+Add a section below “How It Works”.
+
+Title:
+“Why Book Through Us”
+
+Bullet/value cards (4–6 max):
+- “Compare prices across multiple labs”
+- “Certified and verified partner labs”
+- “Transparent pricing (no hidden charges)”
+- “Home collection available”
+- “Support team to help you book”
+- “Easy rebooking & assistance (if offered)”
+
+CTA button:
+“Compare Labs” (anchors to test search/results)
+
+------------------------------------------------------------
+D) Add Section: TEST FINDER (AI) — Symptom → Test Suggestions
+------------------------------------------------------------
+Add a section below “Why Book Through Us” or as a tab next to the main test search.
+Label it clearly as optional help for unsure users.
+
+Section title:
+“Not Sure Which Test to Book? Try Test Finder (AI)”
+
+UI requirements (elderly-friendly):
+- Symptom chips: Fever, Cold, Cough, Sore throat, Headache, Fatigue, Stomach pain, Diarrhea, Body aches, UTI symptoms
+- Searchable dropdown for additional symptoms
+- Optional fields:
+  - Age group (Under 12, 13–17, 18–40, 41–60, 60+)
+  - Duration (1–2 days, 3–7 days, 1–2 weeks, 2+ weeks)
+- “Urgent symptoms?” checklist (red flags):
+  - Chest pain
+  - Severe shortness of breath
+  - Confusion/fainting
+  - Severe dehydration
+  - Uncontrolled bleeding
+CTA:
+“Get test suggestions”
+
+Output requirements:
+- Must display results grouped:
+  1) “Suggested tests to consider”
+  2) “Common add-ons” (optional)
+  3) “Relevant packages” (optional)
+- Each test item shows:
+  - Test name
+  - One-line reason in simple language
+  - Button: “Compare labs”
+- Provide a combined CTA:
+  “Compare labs for all suggested tests”
+
+Safety requirements:
+- Must show disclaimer above results:
+  “This tool provides general test suggestions for booking convenience. It is not a diagnosis.”
+- If any red-flag symptom is selected:
+  - Show urgent_warning message FIRST:
+    “Your symptoms may need urgent medical evaluation. Please seek immediate medical help.”
+  - Then optionally show booking guidance only AFTER warning.
+
+Implementation requirements:
+- Add an API route / backend endpoint (depending on stack) that sends user inputs to an LLM and expects STRICT JSON output.
+- Use a strict JSON schema like:
+{
+  "disclaimer": "...",
+  "urgent_warning": {"show": true/false, "message": "..."},
+  "suggested_tests": [{"name":"", "reason":"", "priority":"high|med|low"}],
+  "add_ons": [{"name":"", "reason":""}],
+  "packages": [{"name":"", "reason":"", "cta":"View package"}]
+}
+- Render with loading state, error state, and safe JSON parsing.
+
+Include the LLM prompt used, with these strict rules:
+- No diagnosis
+- No medication advice
+- Cautious language (“may consider”, “often used to evaluate”)
+- JSON only, no extra text
+
+------------------------------------------------------------
+E) UX/Accessibility Adjustments (Desktop + Elderly)
+------------------------------------------------------------
+- Increase base font size and button size where appropriate.
+- Improve contrast and spacing.
+- Ensure CTAs are obvious and consistent (primary vs secondary).
+- Add visible “Need help booking?” support block with phone/WhatsApp if available.
+
+Output:
+- Provide updated homepage sections with final copy text.
+- Provide code changes/components added.
+- Provide the API route/service code and the LLM prompt for structured JSON.
